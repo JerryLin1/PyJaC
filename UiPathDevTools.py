@@ -1,7 +1,7 @@
-from dotenv import load_dotenv
-import requests
-import os
 import json
+import os
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -12,12 +12,10 @@ UIPATH_CLIENT_ID = os.getenv("UIPATH_CLIENT_ID")
 UIPATH_REFRESH_TOKEN = os.getenv("UIPATH_REFRESH_TOKEN")
 UIPATH_PROCESS_KEY = os.getenv("UIPATH_PROCESS_KEY")
 UIPATH_FID = os.getenv("UIPATH_FID")
-UIPATH_ROBOT_ID = os.getenv("UIPATH_ROBOT_ID")
 
 
-# Returns the the UiPath access token which is needed to make calls to the
-# UiPath Orchestrator API. Expires every 24 hours
-# Requires .env file to be configured with UiPath account tenant info
+# For dev use only
+
 def get_uipath_token():
     url = "https://account.uipath.com/oauth/token"
     headers = {
@@ -40,35 +38,42 @@ def get_uipath_token():
     return auth_json['access_token']
 
 
-def start_job(access_token):
-    url = " https://cloud.uipath.com/{}/{" \
-          "}/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs" \
+# Run to get all information of robots. You will need the id of an unattended
+# robot to be able to run processes
+def get_robots(access_token):
+    url = "https://cloud.uipath.com/{}/{" \
+          "}/odata/Robots/UiPath.Server.Configuration.OData" \
+          ".GetConfiguredRobots" \
+        .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
+    headers = {
+        "Content-Type": "application/json",
+        "X-UIPATH-OrganizationUnitId": UIPATH_FID,
+        "X-UIPATH-TenantName": UIPATH_TENANT_NAME,
+        "Authorization": "Bearer " + access_token
+    }
+    value = requests.get(url, headers=headers)
+    print(value.text)
+
+
+# Run to get all information of a user's processes. You will need the release
+# key, known just as "Key" associated with a process to be able to run it
+def get_process_keys(access_token):
+    url = "https://platform.uipath.com/{}/{}/odata/Releases" \
         .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
         "Content-Type": "application/json",
         "X-UIPATH-TenantName": UIPATH_TENANT_NAME,
-        "X-UIPATH-OrganizationUnitId": UIPATH_FID,
         "Authorization": "Bearer " + access_token
     }
-    input_arguments = {
-        "text": "SUP!"
-    }
-    data = {
-        "startInfo": {
-            "ReleaseKey": UIPATH_PROCESS_KEY,
-            "RobotIds": [int(UIPATH_ROBOT_ID)],
-            "JobsCount": 0,
-            "Strategy": "Specific",
-            # "InputArguments": input_arguments,
-        }
-    }
-    data = str(data).replace("'", '"')
-    print(data)
-
-    value = requests.post(url, data=data, headers=headers)
+    value = requests.get(url, headers=headers)
     print(value.text)
 
 
-r = "5af0a4ba-32e0-41ed-84ee-31196da47e72"
 access_token = get_uipath_token()
-start_job(access_token)
+print(
+    "============================= Process Keys =============================")
+get_process_keys(access_token)
+print("\n")
+print(
+    "========================== Robots Information ==========================")
+get_robots(access_token)
