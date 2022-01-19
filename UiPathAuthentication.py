@@ -1,3 +1,5 @@
+import time
+
 from dotenv import load_dotenv
 import requests
 import os
@@ -40,8 +42,8 @@ def get_uipath_token():
     return auth_json['access_token']
 
 
-def start_job(access_token):
-    url = " https://cloud.uipath.com/{}/{" \
+def start_job(access_token, input_arguments):
+    url = "https://cloud.uipath.com/{}/{" \
           "}/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs" \
         .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
@@ -50,25 +52,39 @@ def start_job(access_token):
         "X-UIPATH-OrganizationUnitId": UIPATH_FID,
         "Authorization": "Bearer " + access_token
     }
-    input_arguments = {
-        "text": "SUP!"
-    }
+
     data = {
         "startInfo": {
             "ReleaseKey": UIPATH_PROCESS_KEY,
             "RobotIds": [int(UIPATH_ROBOT_ID)],
-            "JobsCount": 0,
             "Strategy": "Specific",
-            # "InputArguments": input_arguments,
+            "InputArguments": json.dumps(input_arguments),
         }
     }
-    data = str(data).replace("'", '"')
-    print(data)
 
-    value = requests.post(url, data=data, headers=headers)
-    print(value.text)
+    data = json.dumps(data)
+    # print(data)
+
+    # This post request starts the process
+    job_info = requests.post(url, data=data, headers=headers).json()["value"][0]
+    # Store the id to be used in next part
+    job_id = job_info["Id"]
+
+    url2 = "https://platform.uipath.com/{}/{" \
+           "}/odata/Jobs?$filter=Id eq {}" \
+        .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME, job_id)
+    # Continuously check for completion of the process using its id
+    job_status = requests.get(url2, headers=headers).json()["value"][0]
+    while job_status["State"] != "Successful":
+        time.sleep(0.2)
+        job_status = requests.get(url2, headers=headers).json()["value"][0]
+    # Return the output arguments of the process once it's complete
+    return job_status["OutputArguments"]
 
 
-r = "5af0a4ba-32e0-41ed-84ee-31196da47e72"
 access_token = get_uipath_token()
-start_job(access_token)
+input_arguments = {
+    "a": "Tester"
+}
+output = start_job(access_token, input_arguments)
+print(output)
