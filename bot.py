@@ -48,14 +48,30 @@ async def save(ctx, city_name, country_code):
 
     if ctx.author.name not in user_cities:
         user_cities[ctx.author.name] = [(city_name, country_code)]
-    elif not (city_name.upper(), country_code.upper()) in user_cities[ctx.author.name]:
+        message = "saved!"
+    elif not ([city_name.upper(), country_code.upper()]) in user_cities[ctx.author.name]:
         user_cities[ctx.author.name].append((city_name.upper(), country_code.upper()))
+        message = "saved!"
     else:
-        await ctx.send('city already saved!')
+        messge = 'city already saved!'
+    await ctx.send(message)
     json.dump(user_cities, a_file)
     a_file.close()
-    await ctx.send("saved!")
 
+@bot.command(name="delete")
+async def delete_city(ctx, city_name, country_code):
+    a_file = open("cities.json", "w")
+
+    if ctx.author.name not in user_cities:
+        user_cities[ctx.author.name] = [(city_name, country_code)]
+        await ctx.send('You have no saved cities!')
+    elif not [city_name.upper(), country_code.upper()] in user_cities[ctx.author.name]:
+        await ctx.send('You do not have that city saved!')
+    else:
+        user_cities[ctx.author.name].remove([city_name, country_code])
+        await ctx.send('City deleted!')
+    json.dump(user_cities, a_file)
+    a_file.close()
 
 @bot.command(name="cities")
 async def get_cities(ctx):
