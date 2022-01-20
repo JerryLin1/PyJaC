@@ -12,8 +12,6 @@ UIPATH_CLIENT_ID = os.getenv("UIPATH_CLIENT_ID")
 UIPATH_REFRESH_TOKEN = os.getenv("UIPATH_REFRESH_TOKEN")
 UIPATH_PROCESS_KEY = os.getenv("UIPATH_PROCESS_KEY")
 UIPATH_FID = os.getenv("UIPATH_FID")
-
-
 # For dev use only
 
 def get_uipath_token():

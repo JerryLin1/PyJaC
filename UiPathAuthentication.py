@@ -80,11 +80,3 @@ def start_job(access_token, input_arguments):
         job_status = requests.get(url2, headers=headers).json()["value"][0]
     # Return the output arguments of the process once it's complete
     return json.loads(json.loads(job_status["OutputArguments"])["results"])
-
-
-access_token = get_uipath_token()
-input_arguments = {
-    "location": "London,CA"
-}
-output = start_job(access_token, input_arguments)
-print(output)
