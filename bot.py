@@ -55,7 +55,7 @@ async def save(ctx, city_name, country_code):
         user_cities[ctx.author.name].append((city_name.upper(), country_code.upper()))
         message = "saved!"
     else:
-        messge = 'city already saved!'
+        message = 'city already saved!'
     await ctx.send(message)
     json.dump(user_cities, a_file)
     a_file.close()
