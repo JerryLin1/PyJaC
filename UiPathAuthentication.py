@@ -17,7 +17,7 @@ UIPATH_FID = os.getenv("UIPATH_FID")
 UIPATH_ROBOT_ID = os.getenv("UIPATH_ROBOT_ID")
 
 
-# Returns the the UiPath access token which is needed to make calls to the
+# Returns the UiPath access token which is needed to make calls to the
 # UiPath Orchestrator API. Expires every 24 hours
 # Requires .env file to be configured with UiPath account tenant info
 def get_uipath_token():
@@ -39,13 +39,13 @@ def get_uipath_token():
     value = requests.post(url, headers=headers, data=data)
 
     auth_json = json.loads(value.text)
-    return auth_json['access_token']
+    return auth_json['access_token_given']
 
 
 def start_job(access_token, input_arguments):
-    url = "https://cloud.uipath.com/{}/{" \
-          "}/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs" \
-        .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
+    url = "https://cloud.uipath.com/{}/{}/" \
+          "odata/Jobs/UiPath.Server.Configuration.OData.Start" \
+          "Jobs".format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
         "Content-Type": "application/json",
         "X-UIPATH-TenantName": UIPATH_TENANT_NAME,
@@ -70,8 +70,7 @@ def start_job(access_token, input_arguments):
     # Store the id to be used in next part
     job_id = job_info["Id"]
 
-    url2 = "https://platform.uipath.com/{}/{" \
-           "}/odata/Jobs?$filter=Id eq {}" \
+    url2 = "https://platform.uipath.com/{}/{}/odata/Jobs?$filter=Id eq {}" \
         .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME, job_id)
     # Continuously check for completion of the process using its id
     job_status = requests.get(url2, headers=headers).json()["value"][0]
