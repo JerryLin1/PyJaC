@@ -2,10 +2,8 @@ import os
 import json
 from dotenv import load_dotenv
 from discord.ext import commands
-from forecast import get_forecast
 import UiPathAuthentication
 import time
-
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -26,31 +24,37 @@ async def on_ready():
 
 @bot.command(name='weather')
 async def send_weather(ctx):
-    prev_message = await ctx.send('Gathering weather data...')
+    prev_message = await ctx.send(
+        'Gathering <@' + str(ctx.author.id) + '>\'s weather data...')
 
     if ctx.author.name not in user_cities:
         user_cities[ctx.author.name] = []
-        message = 'You have no saved cities! To do that, user the command !save'
+        message = no_city_message(ctx.author.id)
     else:
         temperatures = []
         for city, country in user_cities[ctx.author.name]:
             temp = get_temperature(ctx.author.name, city, country)
-            temperatures.append(f'{city}, {country}: {temp}' + ':sun_with_face:')
-            #Record to file
+            temperatures.append(
+                f'{city}, {country}: {temp}' + ':sun_with_face:')
+
+            # Record to file
         message = temperatures
     await prev_message.edit(content=f"{message}")
 
 
 @bot.command(name="save")
-async def save(ctx, city_name, country_code):
-
+async def save(ctx, city_name, country_code=""):
     a_file = open("cities.json", "w")
+    city_name = city_name.upper()
+    country_code = country_code.upper()
 
     if ctx.author.name not in user_cities:
         user_cities[ctx.author.name] = [(city_name, country_code)]
         message = "saved!"
-    elif not ([city_name.upper(), country_code.upper()]) in user_cities[ctx.author.name]:
-        user_cities[ctx.author.name].append((city_name.upper(), country_code.upper()))
+    elif not ([city_name.upper(), country_code.upper()]) in user_cities[
+        ctx.author.name]:
+        user_cities[ctx.author.name].append(
+            (city_name.upper(), country_code.upper()))
         message = "saved!"
     else:
         message = 'city already saved!'
@@ -58,14 +62,16 @@ async def save(ctx, city_name, country_code):
     json.dump(user_cities, a_file)
     a_file.close()
 
+
 @bot.command(name="delete")
-async def delete_city(ctx, city_name, country_code):
+async def delete_city(ctx, city_name, country_code=""):
     a_file = open("cities.json", "w")
 
-    if ctx.author.name not in user_cities:
+    if user_has_cities(ctx.author.name):
         user_cities[ctx.author.name] = [(city_name, country_code)]
         await ctx.send('You have no saved cities!')
-    elif not [city_name.upper(), country_code.upper()] in user_cities[ctx.author.name]:
+    elif not [city_name.upper(), country_code.upper()] in user_cities[
+        ctx.author.name]:
         await ctx.send('You do not have that city saved!')
     else:
         user_cities[ctx.author.name].remove([city_name, country_code])
@@ -73,24 +79,50 @@ async def delete_city(ctx, city_name, country_code):
     json.dump(user_cities, a_file)
     a_file.close()
 
+
 @bot.command(name="cities")
 async def get_cities(ctx):
-    cities = []
-    for city, country in user_cities[ctx.author.name]:
-        cities.append((f'{city}, {country}'))
-    await ctx.send(cities)
+    if user_has_cities(ctx.author.name):
+        cities = []
+        for city, country in user_cities[ctx.author.name]:
+            location = city
+            if country != "":
+                location += ", " + country
+            cities.append(location)
+        message = "<@" + str(ctx.author.id) + ">'s saved cities: "
+        for city in cities:
+            message += "\n" + city
+    else:
+        message = no_city_message(ctx.author.id)
+    await ctx.send(message)
+
+
+def no_city_message(user_id):
+    msg = "<@{}> you have no saved cities! To do that, user the command !save " \
+          "" \
+          "[CITY] [COUNTRY CODE]."
+    return msg.format(str(user_id))
+
+
+def user_has_cities(user_name):
+    if user_name not in user_cities or len(user_cities[user_name]) == 0:
+        return False
+    return True
+
 
 def get_temperature(user_name, city, country):
-    location = city + ',' + country
+    location = city
+    if country != "":
+        location += ", " + country
 
     input_arguments = {
-                "location": location,
-                "discordName": user_name
+        "location": location,
+        "discordName": user_name
     }
 
     out = UiPathAuthentication.start_job(ACCESS_TOKEN, input_arguments)
     temp = str(out['main']['temp'])
     return temp
 
-    
+
 bot.run(TOKEN)
