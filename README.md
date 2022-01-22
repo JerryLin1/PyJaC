@@ -4,6 +4,9 @@ Built for the PyJac 2022 Competition, WeathAvi is a discord bot that can be adde
 ## Durability
 WeathAvi was made to be durable. It uses the [OpenWeatherMap](https://openweathermap.org/api) API for standard weather users and uses two different APIs for aviation-related commands. WeathAvi makes use of the [AVWX](https://avwx.rest/) and [CheckWX](https://www.checkwxapi.com/) APIs. This is to ensure that should one API not work, the other will kick in and step up to ensure users are still able to get the critical information they need. The root source for all charts and graphs is [NAV Canada](https://flightplanning.navcanada.ca/cgi-bin/CreePage.pl?Langue=anglais&NoSession=NS_Inconnu&Page=forecast-observation&TypeDoc=html).
 
+## Peace of Mind
+All commands are logged, meaning what the user requests from the bot and the bot output are all recorded and stored safely. This is to ensure there is proof if there happens to be an aircraft accident or incident investigation and WeathAvi happens to unfortunately take part.
+
 ## Usage & Commands
 All WeathAvi bot commands start with an exclamation mark when you type a message. Below is a list of available commands that the user can utilize to communicate with WeathAvi.
 
