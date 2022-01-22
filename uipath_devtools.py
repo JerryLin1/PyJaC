@@ -1,7 +1,16 @@
-import json
+"""
+Run this file to get robot and process data. You should only need to run this
+file one time, when you make a new robot or when you make a new process. Save
+the robot ID and the process release key to the .env file to be used in the
+Discord bot's API calls. The ID and process release key should stay the same
+and not need to be updated, unless the old robot or process cannot be used
+for some reason.
+"""
 import os
 import requests
 from dotenv import load_dotenv
+
+from PyJaC.uipath_functions import get_uipath_token
 
 load_dotenv()
 
@@ -14,35 +23,20 @@ UIPATH_PROCESS_KEY = os.getenv("UIPATH_PROCESS_KEY")
 UIPATH_FID = os.getenv("UIPATH_FID")
 
 
-# For dev use only
-def get_uipath_token():
-    url = "https://account.uipath.com/oauth/token"
-    headers = {
-        "Content-Type": "application/json",
-        "X-UIPATH-TenantName": UIPATH_TENANT_NAME
-    }
+def get_robots(access_token_given: str) -> str:
+    """
+    Makes a POST request to the UiPath API to retrieve the information of all
+    the robots currently associated with a specified tenant. The ID of an
+    unattended robot is required to run processes.
 
-    data = {
-        "grant_type": "refresh_token",
-        "client_id": UIPATH_CLIENT_ID,
-        "refresh_token": UIPATH_REFRESH_TOKEN
-    }
-
-    # For some reason only " works and not ' when making API call
-    data = str(data).replace("'", '"')
-
-    value = requests.post(url, headers=headers, data=data)
-
-    auth_json = json.loads(value.text)
-    return auth_json['access_token_given']
-
-
-# Run to get all information of robots. You will need the id of an unattended
-# robot to be able to run processes
-def get_robots(access_token_given):
+    :param access_token_given: A string representing the access token
+    retrieved from the get_uipath_token() function. This is required to
+    retrieve a user's information.
+    :return: A string representing the data of all robots in JSON format. It is
+    recommended to copy the string to format it to make it more readable.
+    """
     url = "https://cloud.uipath.com/{}/{}/odata/Robots/" \
-          "UiPath.Server.Configuration.OData." \
-          "GetConfigured" \
+          "UiPath.Server.Configuration.OData.GetConfigured" \
           "Robots".format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
         "Content-Type": "application/json",
@@ -51,12 +45,21 @@ def get_robots(access_token_given):
         "Authorization": "Bearer " + access_token_given
     }
     value = requests.get(url, headers=headers)
-    print(value.text)
+    return value.text
 
 
-# Run to get all information of a user's processes. You will need the release
-# key, known just as "Key" associated with a process to be able to run it
 def get_process_keys(access_token_given):
+    """
+    Makes a POST request to the UiPath API to retrieve the information of all
+    the processes currently associated with a specified tenant. The release
+    key (denoted as "Key") of a process is required to be able to start it.
+
+    :param access_token_given: A string representing the access token
+    retrieved from the get_uipath_token() function. This is required to
+    retrieve a user's information.
+    :return: A string representing the data of all processes in JSON format.
+    It is recommended to copy the string to format it to make it more readable.
+    """
     url = "https://platform.uipath.com/{}/{}/odata/Releases" \
         .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
@@ -65,14 +68,12 @@ def get_process_keys(access_token_given):
         "Authorization": "Bearer " + access_token_given
     }
     value = requests.get(url, headers=headers)
-    print(value.text)
+    return value.text
 
 
 access_token = get_uipath_token()
-print(
-    "============================= Process Keys =============================")
-get_process_keys(access_token)
+print("============================ Process Keys ============================")
+print(get_process_keys(access_token))
 print("\n")
-print(
-    "========================== Robots Information ==========================")
-get_robots(access_token)
+print("========================= Robots Information =========================")
+print(get_robots(access_token))

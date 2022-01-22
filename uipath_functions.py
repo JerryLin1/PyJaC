@@ -47,20 +47,23 @@ def get_uipath_token() -> str:
 
 def start_job(access_token: str, input_arguments: dict) -> dict:
     """
-    Calls a POST request to the UiPath Orchestrator API using environment
-    variables to start the process, which will then call the OpenWeatherMap
-    API using the input arguments. It will then return the weather data from
-    OpenWeatherMap.
+    Calls a POST request to the UiPath Orchestrator API to start the process,
+    which will then call the OpenWeatherMap API using the input arguments. It
+    will then return the weather data from OpenWeatherMap.
+
+    Possible input_argument values:
+    "location" represents the city the weather data is to be pulled from,
+    denoted by "[CITY], [COUNTRY CODE]".
+    "discordName" represents the Discord username of the user who requests
+    the data.
+    "units represents the measurement system of the weather data that is to
+    be returned. Possible values are "standard," "imperial", and "metric".
 
     :param access_token: The access token retrieved from get_uipath_token().
+
     :param input_arguments: A dictionary in JSON format that represents the
-    input arguments that are passed to the UiPath process. The UiPath process
-    has 3 possible input arguments: "location", which represents the city
-    that the weather data is to be pulled from. It is denoted by "[CITY],
-    [COUNTRY CODE]" in which the country code is optional. "discordName"
-    represents the Discord username of the user who requests the data.
-    "units" represents the unit system of the weather data that is to be
-    returned. Possible values are "standard", "imperial", and "metric".
+    input arguments that are passed to the UiPath process.
+
     :return: A dictionary in JSON format that represents the output arguments
     of the UiPath process.
     """
@@ -74,6 +77,7 @@ def start_job(access_token: str, input_arguments: dict) -> dict:
         "Authorization": "Bearer " + access_token
     }
 
+    # Data required to start a new UiPath process job
     data = {
         "startInfo": {
             "ReleaseKey": UIPATH_PROCESS_KEY,
@@ -84,7 +88,6 @@ def start_job(access_token: str, input_arguments: dict) -> dict:
     }
 
     data = json.dumps(data)
-    # print(data)
 
     # This post request starts the process
     job_info = requests.post(url, data=data, headers=headers).json()["value"][0]
@@ -98,5 +101,5 @@ def start_job(access_token: str, input_arguments: dict) -> dict:
     while job_status["State"] != "Successful":
         time.sleep(0.2)
         job_status = requests.get(url2, headers=headers).json()["value"][0]
-    # Return the output arguments of the process once it's complete
+    # Return the output arguments of the process once it is complete
     return json.loads(json.loads(job_status["OutputArguments"])["results"])

@@ -97,9 +97,15 @@ async def cmd_get_cities(ctx):
 
 # WEATHER HELPER METHODS -------------------------------------------------------
 def no_city_message(user_id):
-    msg = "<@{}> you have no saved cities! " \
-          "To do that, user the command !save [CITY] [COUNTRY CODE]."
-    return msg.format(str(user_id))
+    """
+    Returns a string with a generic error message for when the user doesn't
+    have any cities saved
+    :param user_id: The Discord ID of the user to be 
+    :return:
+    """
+    msg = f"<@{user_id}> you have no saved cities! " \
+          f"To do that, user the command !save [CITY] [COUNTRY CODE]."
+    return msg
 
 
 def user_has_cities(user_name):
