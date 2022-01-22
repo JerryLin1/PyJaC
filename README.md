@@ -4,25 +4,36 @@ Built for the PyJac 2022 Competition, WeathAvi is a discord bot that can be adde
 ## Durability
 WeathAvi was made to be durable. It uses the [OpenWeatherMap](https://openweathermap.org/api) API for standard weather users and uses two different APIs for aviation-related commands. WeathAvi makes use of the [AVWX](https://avwx.rest/) and [CheckWX](https://www.checkwxapi.com/) APIs. This is to ensure that should one API not work, the other will kick in and step up to ensure users are still able to get the critical information they need. The root source for all charts and graphs is [NAV Canada](https://flightplanning.navcanada.ca/cgi-bin/CreePage.pl?Langue=anglais&NoSession=NS_Inconnu&Page=forecast-observation&TypeDoc=html).
 
-## Usage
+## Usage & Commands
 All WeathAvi bot commands start with an exclamation mark when you type a message. Below is a list of available commands that the user can utilize to communicate with WeathAvi.
 
 ***
 
 ### !weather
+This command provides the user with the forecast for their saved cities. The forecast will includes any warnings to take note of and give suggestions to the user.
 
 ***
 
-### !save
+### !save `<city>` `<country_code>`
+This command saves the specified city to the list of cities the user would like to look up the forecast for.
+
+`city`: The city to add to the user's list.
+
+`country_code`: The country where the city resides in in the format of a code.
 
 ***
 
-### !delete
+### !delete `<city>` `<country_code>`
+This command removes athe specified city from the list of cities the user would like to look up the forecast for.
+
+`city`: The city to add to the user's list.
+
+`country_code`: The country where the city resides in in the format of a code.
 
 ***
 
 ### !cities
-
+This command lists the user's saved cities. Useful when the user wants to make changes to their saved favourites list.
 ***
 
 ### !metar `<station_name>`
