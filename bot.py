@@ -41,16 +41,13 @@ async def send_weather(ctx, spec_city: str = "", spec_country: str = ""):
     name = ctx.author.name
     user_id = ctx.author.id
 
-    # If the user has no cities saved
-    if not user_has_cities(name):
-        await ctx.send(no_city_message(user_id))
-        return
 
     prev_message = await ctx.send(
         'Gathering <@' + str(user_id) + '>\'s weather data...')
     message = f"__Here is your weather report! :bar_chart:__ <@{user_id}>\n"
     if spec_city == "" and spec_country == "":
-        if ctx.author.name not in user_cities:
+        # If the user has no cities saved
+        if not user_has_cities(name):
             user_cities[name] = []
             message = no_city_message(user_id)
             message += "\n If you want a specific city, " \
@@ -236,7 +233,7 @@ def get_special_cond(temp, wind_speed, humidity):
     hot = float(temp) >= 35
     cold = float(temp) <= 0
     chilly = 0 <= float(temp) <= 15
-    
+
     warnings = []
     suggestion = ""
     if humid:
@@ -260,7 +257,7 @@ def get_special_cond(temp, wind_speed, humidity):
             '-:exclamation: It\'s very cold outside! :cold_face: Wear warm '
             'clothes! :snowflake:')
 
-    
+
     if warnings == []:
         if chilly:
             suggestion = "-:grey_exclamation: Suggestion: It's a little chilly" + \
