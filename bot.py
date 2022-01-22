@@ -37,10 +37,10 @@ async def send_weather(ctx):
         for city, country in user_cities[name]:
             temp, warnings = get_temperature(name, city, country)
             temperatures.append(f'{city}, {country}: {temp}')
-            message += f"**{city}**"
+            message += f"**{city}"
             if country != "":
                 message += f", {country}"
-            message += f" {temp}C°\n"
+            message += f" {temp}C°\n**"
             if warnings != []:
                 message += ':warning: Warnings:\n'
                 for warning in warnings:
