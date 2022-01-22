@@ -26,31 +26,25 @@ async def on_ready():
 
 # WEATHER SPECIFIC METHODS -----------------------------------------------------
 @bot.command(name='weather')
-async def send_weather(ctx):
+async def send_weather(ctx, spec_city="", spec_country=""):
     name = ctx.author.name
     user_id = ctx.author.id
     prev_message = await ctx.send(
         'Gathering <@' + str(user_id) + '>\'s weather data...')
-
-    if ctx.author.name not in user_cities:
-        user_cities[name] = []
-        message = no_city_message(user_id)
-    else:
-        message = f"<@{user_id}> Here is your weather report! :bar_chart:\n"
-        temperatures = []
-        for city, country in user_cities[name]:
-            temp, warnings = get_temperature(name, city, country)
-            temperatures.append(f'{city}, {country}: {temp}')
-            message += f"**{city}"
-            if country != "":
-                message += f", {country}"
-            message += f" {temp}C°\n**"
-            if warnings:  # equivalent to warning != []
-                message += ':warning: Warnings:\n'
-                for warning in warnings:
-                    message += warning + "\n"
-            message += "\n"
-            # Record to file
+    message = f"__Here is your weather report! :bar_chart:__ <@{user_id}>\n"
+    if spec_city == "" and spec_country == "":
+        if ctx.author.name not in user_cities:
+            user_cities[name] = []
+            message = no_city_message(user_id)
+            message += "\n If you want a specific city, " \
+                       "try !weather [CITY] [COUNTRY]."
+        else:
+            for city, country in user_cities[name]:
+                message += generate_city_data(name, city, country)
+    elif spec_city != "":
+        spec_city = spec_city.upper()
+        spec_country = spec_country.upper()
+        message += generate_city_data(name, spec_city, spec_country)
     await prev_message.edit(content=f"{message}")
 
 
@@ -97,8 +91,7 @@ async def delete_city(ctx, city_name, country_code=""):
 
 @bot.command(name="cities")
 async def cmd_get_cities(ctx):
-    message = "<@" + str(ctx.author.id) + ">'s saved cities: "
-    message += get_cities(ctx.author.name, ctx.author.id)
+    message = get_cities(ctx.author.name, ctx.author.id)
     await ctx.send(message)
 
 
@@ -131,6 +124,21 @@ def get_cities(user_name, user_id):
     return message
 
 
+def generate_city_data(user_name, city, country):
+    message = ""
+    temp, warnings = get_temperature(user_name, city, country)
+    message += f"**{city}"
+    if country != "":
+        message += f", {country}"
+    message += f" {temp}C°\n**"
+    if warnings:  # equivalent to warning != []
+        message += ':warning: Warnings:\n'
+        for warning in warnings:
+            message += warning + "\n"
+    message += "\n"
+    return message
+
+
 def get_temperature(user_name, city, country):
     location = city
     if country != "":
@@ -158,24 +166,24 @@ def get_special_cond(temp, wind_speed, humidity):
 
     if humid:
         warnings.append(
-            '-It appears to be a humid day, so make sure to stay hydrated and '
+            '- It appears to be a humid day, so make sure to stay hydrated and '
             'avoid outdoor activities! :droplet:')
     if dry:
         warnings.append(
-            '-It appears to be a dry day, so make sure to stay hydrated and '
+            '- It appears to be a dry day, so make sure to stay hydrated and '
             'avoid outdoor activities and moisturize! :desert:')
     if hot:
         warnings.append(
-            '-It appears to be a hot day, so make sure to stay hydrated, '
+            '- It appears to be a hot day, so make sure to stay hydrated, '
             'wear loose clothing, preferably of darker colors! :sun_with_face:')
     if windy:
         warnings.append(
-            '-:exclamation: strong winds that may make it hard to walk, '
-            'and make it colder in low temperatures. :wind_blowing_face:')
+            '-:exclamation: It\'s very windy outside. '
+            'Be careful! :wind_blowing_face:')
     if cold:
         warnings.append(
-            '-:exclamation: low temperatures. wear warm clothes, '
-            'and moisturize! :snowflake:')
+            '-:exclamation: It\'s very cold outside! :cold_face: Wear warm '
+            'clothes! :snowflake:')
     return warnings
 
 
@@ -385,11 +393,11 @@ async def send_station(ctx, station_name="", detail1="", detail2="",
 
     # Check for extra details
     long = detail1.lower() == 'long' or detail2.lower() == 'long' or \
-        detail3.lower() == 'long'
+           detail3.lower() == 'long'
     metar = detail1.lower() == 'metar' or detail2.lower() == 'metar' or \
-        detail3.lower() == 'metar'
+            detail3.lower() == 'metar'
     taf = detail1.lower() == 'taf' or detail2.lower() == 'taf' or \
-        detail3.lower() == 'taf'
+          detail3.lower() == 'taf'
 
     # Get data, if possible
     temp = funcs.get_station(station_name)
