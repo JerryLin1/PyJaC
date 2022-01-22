@@ -15,9 +15,9 @@ All WeathAvi bot commands start with an exclamation mark when you type a message
 ### !weather `<optional: city>` `<optional: country_code>`
 This command provides the user with the forecast for their saved cities. The forecast will includes any warnings to take note of and give suggestions to the user. Additionally, the user can optionally specify a city and a country code if they want to get the weather data for a single city.
 
-`city`: Optional: The city to get the weather data from.
+`optional: city`: The city to get the weather data from.
 
-`country_code`: Optional: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
+`optional: country_code`: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
 
 ***
 
@@ -26,7 +26,7 @@ This command saves the specified city to the list of cities the user would like 
 
 `city`: The city to add to the user's list.
 
-`country_code`: Optional: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
+`optional: country_code`: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
 
 ***
 
@@ -35,7 +35,7 @@ This command removes the specified city from the list of cities the user would l
 
 `city`: The city to add to the user's list.
 
-`country_code`: The country where the city resides in in the format of a code. Optional, but only if the user did not specify a country when they originally saved it.
+`optional: country_code`: The country code of the country that the city resides in.
 
 ***
 
