@@ -194,11 +194,12 @@ def generate_city_data(user_name: str, city: str, country: str) -> str:
     report for a specified city
     """
     message = ""
-    temp, warnings, suggestion = get_temperature(user_name, city, country)
+    temp, warnings, suggestion, forecast = get_temperature(user_name, city, country)
     message += f"**{city}"
     if country != "":
         message += f", {country}"
     message += f" {temp}C°\n**"
+    message += forecast
     if warnings:  # equivalent to warning != []
         message += ':warning: Warnings:\n'
         for warning in warnings:
@@ -223,8 +224,8 @@ def get_temperature(user_name, city, country):
     temp = str(out['main']['temp'])
     warnings, suggestion = get_special_cond(temp, out['wind']['speed'],
                                 out['main']['humidity'])
-    return temp, warnings, suggestion
-
+    forecast = f':white_sun_small_cloud: The forecast for today is {out["weather"][0]["description"]}.\n'
+    return temp, warnings, suggestion, forecast
 
 def get_special_cond(temp, wind_speed, humidity):
     humid = float(humidity) >= 65
@@ -260,10 +261,10 @@ def get_special_cond(temp, wind_speed, humidity):
 
     if warnings == []:
         if chilly:
-            suggestion = "-:grey_exclamation: Suggestion: It's a little chilly" + \
+            suggestion = "-:grey_exclamation: It's a little chilly" + \
                         " outside, so it's better to put on a jacket! :smile:"
         else:
-            suggestion = "-:grey_exclamation: Suggestion: The weather is great" + \
+            suggestion = "-:grey_exclamation: The weather is great" + \
                 " outside! Go out and have a nice day! :smile:"
     return warnings, suggestion
 
