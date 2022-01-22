@@ -45,7 +45,7 @@ async def send_weather(ctx):
             if country != "":
                 message += f", {country}"
             message += f" {temp}C°\n**"
-            if warnings != []:
+            if warnings:  # equivalent to warning != []
                 message += ':warning: Warnings:\n'
                 for warning in warnings:
                     message += warning + "\n"
@@ -649,7 +649,6 @@ async def send_turb_report(ctx, location: str = ''):
         await ctx.send(':warning: **__TURBULENCE REPORT__**\n'
                        'Invalid location specified, '
                        'please specify a location...\n\n')
-
 
 
 bot.run(TOKEN)
