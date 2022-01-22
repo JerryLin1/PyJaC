@@ -132,7 +132,7 @@ def get_cities(user_name, user_id):
 
 def generate_city_data(user_name, city, country):
     message = ""
-    temp, warnings = get_temperature(user_name, city, country)
+    temp, warnings, suggestion = get_temperature(user_name, city, country)
     message += f"**{city}"
     if country != "":
         message += f", {country}"
@@ -141,6 +141,8 @@ def generate_city_data(user_name, city, country):
         message += ':warning: Warnings:\n'
         for warning in warnings:
             message += warning + "\n"
+    elif suggestion:
+        message += suggestion
     message += "\n"
     return message
 
@@ -157,9 +159,9 @@ def get_temperature(user_name, city, country):
 
     out = uipath_functions.start_job(ACCESS_TOKEN, input_arguments)
     temp = str(out['main']['temp'])
-    warnings = get_special_cond(temp, out['wind']['speed'],
+    warnings, suggestion = get_special_cond(temp, out['wind']['speed'],
                                 out['main']['humidity'])
-    return temp, warnings
+    return temp, warnings, suggestion
 
 
 def get_special_cond(temp, wind_speed, humidity):
@@ -168,8 +170,10 @@ def get_special_cond(temp, wind_speed, humidity):
     windy = float(wind_speed) >= 13.5
     hot = float(temp) >= 35
     cold = float(temp) <= 0
+    chilly = 0 <= float(temp) <= 15
+    
     warnings = []
-
+    suggestion = ""
     if humid:
         warnings.append(
             '- It appears to be a humid day, so make sure to stay hydrated and '
@@ -190,8 +194,16 @@ def get_special_cond(temp, wind_speed, humidity):
         warnings.append(
             '-:exclamation: It\'s very cold outside! :cold_face: Wear warm '
             'clothes! :snowflake:')
-    return warnings
 
+    
+    if warnings == []:
+        if chilly:
+            suggestion = "-:grey_exclamation: Suggestion: It's a little chilly" + \
+                        " outside, so it's better to put on a jacket! :smile:"
+        else:
+            suggestion = "-:grey_exclamation: Suggestion: The weather is great" + \
+                " outside! Go out and have a nice day! :smile:"
+    return warnings, suggestion
 
 # AVIATION SPECIFIC METHODS ----------------------------------------------------
 @bot.command(name='metar')
