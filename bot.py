@@ -224,7 +224,7 @@ def get_temperature(user_name, city, country):
     temp = str(out['main']['temp'])
     warnings, suggestion = get_special_cond(temp, out['wind']['speed'],
                                 out['main']['humidity'])
-    forecast = f':white_sun_small_cloud: The forecast for today is {out["weather"][0]["description"]}.\n'
+    forecast = f':cloud: The forecast for today is {out["weather"][0]["description"]}.\n'
     return temp, warnings, suggestion, forecast
 
 def get_special_cond(temp, wind_speed, humidity):
