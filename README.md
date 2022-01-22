@@ -138,6 +138,7 @@ This command provides the user with the ***Surface Analysis Chart*** only for Ca
 `<priority>`: The map release time relative to each other. Possible selections are:
  - **Latest Chart** - `(latest, l)`
  - **Previous Chart** - `(previous, prev, p)`
+ - **All Priorities** - `(all)`
 
 ***
 
@@ -153,6 +154,7 @@ This command provides the user with the ***Upper Air Analysis Chart*** only for 
 `<priority>`: The map release time relative to each other. Possible selections are:
  - **Latest Chart** - `(latest, l)`
  - **Previous Chart** - `(previous, prev, p)`
+ - **All Priorities** - `(all)`
 
 ***
 
