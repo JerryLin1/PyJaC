@@ -75,6 +75,18 @@
     },
     {
       "Package": {
+        "Id": "UiPath.Python.Activities",
+        "Version": "1.4.1"
+      },
+      "Assemblies": [
+        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.Activities.Design.dll",
+        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.Activities.dll",
+        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.dll"
+      ],
+      "Path": "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities\\1.4.1"
+    },
+    {
+      "Package": {
         "Id": "UiPath.System.Activities",
         "Version": "21.10.3"
       },
@@ -204,18 +216,6 @@
         "C:\\Users\\jerry\\.nuget\\packages\\uipath.webapi.activities/1.9.3-preview\\lib/net5.0-windows7.0/UiPath.Web.dll"
       ],
       "Path": "C:\\Users\\jerry\\.nuget\\packages\\uipath.webapi.activities\\1.9.3-preview"
-    },
-    {
-      "Package": {
-        "Id": "UiPath.Python.Activities",
-        "Version": "1.4.1"
-      },
-      "Assemblies": [
-        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.Activities.Design.dll",
-        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.Activities.dll",
-        "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities/1.4.1\\lib/net5.0-windows7.0/UiPath.Python.dll"
-      ],
-      "Path": "C:\\Users\\jerry\\.nuget\\packages\\uipath.python.activities\\1.4.1"
     }
   ],
   "Conflicts": [],

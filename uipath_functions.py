@@ -17,10 +17,14 @@ UIPATH_FID = os.getenv("UIPATH_FID")
 UIPATH_ROBOT_ID = os.getenv("UIPATH_ROBOT_ID")
 
 
-# Returns the UiPath access token which is needed to make calls to the
-# UiPath Orchestrator API. Expires every 24 hours
-# Requires .env file to be configured with UiPath account tenant info
-def get_uipath_token():
+def get_uipath_token() -> str:
+    """
+    Calls a POST request to the UiPath API to retrieve the access token
+    linked with the specified tenant. The access token is then required for
+    every subsequent call to the UiPath API.
+
+    :return: A string representing the access token.
+    """
     url = "https://account.uipath.com/oauth/token"
     headers = {
         "Content-Type": "application/json",
@@ -33,7 +37,6 @@ def get_uipath_token():
         "refresh_token": UIPATH_REFRESH_TOKEN
     }
 
-    # For some reason only " works and not ' when making API call
     data = str(data).replace("'", '"')
 
     value = requests.post(url, headers=headers, data=data)
@@ -42,10 +45,28 @@ def get_uipath_token():
     return auth_json['access_token_given']
 
 
-def start_job(access_token, input_arguments):
+def start_job(access_token: str, input_arguments: dict) -> dict:
+    """
+    Calls a POST request to the UiPath Orchestrator API using environment
+    variables to start the process, which will then call the OpenWeatherMap
+    API using the input arguments. It will then return the weather data from
+    OpenWeatherMap.
+
+    :param access_token: The access token retrieved from get_uipath_token().
+    :param input_arguments: A dictionary in JSON format that represents the
+    input arguments that are passed to the UiPath process. The UiPath process
+    has 3 possible input arguments: "location", which represents the city
+    that the weather data is to be pulled from. It is denoted by "[CITY],
+    [COUNTRY CODE]" in which the country code is optional. "discordName"
+    represents the Discord username of the user who requests the data.
+    "units" represents the unit system of the weather data that is to be
+    returned. Possible values are "standard", "imperial", and "metric".
+    :return: A dictionary in JSON format that represents the output arguments
+    of the UiPath process.
+    """
     url = "https://cloud.uipath.com/{}/{}/" \
-          "odata/Jobs/UiPath.Server.Configuration.OData.Start" \
-          "Jobs".format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
+          "odata/Jobs/UiPath.Server.Configuration.OData.StartJobs" \
+        .format(UIPATH_ACCOUNT_LOGICAL_NAME, UIPATH_TENANT_NAME)
     headers = {
         "Content-Type": "application/json",
         "X-UIPATH-TenantName": UIPATH_TENANT_NAME,

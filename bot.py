@@ -2,7 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 from discord.ext import commands
-import UiPathAuthentication
+import uipath_functions
 
 import funcs
 import quickstart
@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix='!')
 a_file = open("cities.json", "r")
 user_cities = json.load(a_file)
 a_file.close()
-ACCESS_TOKEN = UiPathAuthentication.get_uipath_token()
+ACCESS_TOKEN = uipath_functions.get_uipath_token()
 
 
 @bot.event
@@ -141,7 +141,7 @@ def get_temperature(user_name, city, country):
         "discordName": user_name
     }
 
-    out = UiPathAuthentication.start_job(ACCESS_TOKEN, input_arguments)
+    out = uipath_functions.start_job(ACCESS_TOKEN, input_arguments)
     temp = str(out['main']['temp'])
     warnings = get_special_cond(temp, out['wind']['speed'],
                                 out['main']['humidity'])

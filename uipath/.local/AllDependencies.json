@@ -18301,9 +18301,9 @@
     "restore": {
       "projectUniqueName": "PyJaC",
       "projectName": "PyJaC",
-      "projectPath": "C:\\Users\\jerry\\OneDrive\\Documents\\UiPath\\PyJaC\\.local",
+      "projectPath": "C:\\Users\\jerry\\Projects\\python\\PyJaC\\uipath\\.local",
       "packagesPath": "C:\\Users\\jerry\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jerry\\OneDrive\\Documents\\UiPath\\PyJaC\\.local"
+      "outputPath": "C:\\Users\\jerry\\Projects\\python\\PyJaC\\uipath\\.local"
     },
     "frameworks": {
       "net5.0-windows7.0": {
