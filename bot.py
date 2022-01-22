@@ -58,13 +58,15 @@ async def send_weather(ctx, spec_city: str = "", spec_country: str = ""):
         else:
             for city, country in user_cities[name]:
                 message += "\n" + generate_city_data(name, city, country) + "\n"
+            message += "\n" + EMOJI_LINE
     elif spec_city != "":
         spec_city = spec_city.upper()
         spec_country = spec_country.upper()
         message += "\n"
         message += generate_city_data(name, spec_city, spec_country)
         message += "\n"
-    message += "\n" + EMOJI_LINE
+        message += "\n" + EMOJI_LINE
+
     await prev_message.edit(content=f"{message}")
 
 
