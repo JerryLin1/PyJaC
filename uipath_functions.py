@@ -42,7 +42,7 @@ def get_uipath_token() -> str:
     value = requests.post(url, headers=headers, data=data)
 
     auth_json = json.loads(value.text)
-    return auth_json['access_token_given']
+    return auth_json['access_token']
 
 
 def start_job(access_token: str, input_arguments: dict) -> dict:
