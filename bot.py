@@ -26,9 +26,26 @@ async def on_ready():
 
 # WEATHER SPECIFIC METHODS -----------------------------------------------------
 @bot.command(name='weather')
-async def send_weather(ctx, spec_city="", spec_country=""):
+async def send_weather(ctx, spec_city: str = "", spec_country: str = ""):
+    """
+    This command provides the user with the forecast for their saved cities.
+    The forecast will includes any warnings to take note of and give
+    suggestions to the user. Additionally, the user can specify a specific
+    city they want the data to instead of using the cities they have saved.
+
+    :param ctx: The context of the Discord message.
+    :param spec_city: Optional. The city that the user wants the data from.
+    :param spec_country: Optional. The country code of the country that the
+    city is in.
+    """
     name = ctx.author.name
     user_id = ctx.author.id
+
+    # If the user has no cities saved
+    if not user_has_cities(name):
+        await ctx.send(no_city_message(user_id))
+        return
+
     prev_message = await ctx.send(
         'Gathering <@' + str(user_id) + '>\'s weather data...')
     message = f"__Here is your weather report! :bar_chart:__ <@{user_id}>\n"
@@ -49,7 +66,16 @@ async def send_weather(ctx, spec_city="", spec_country=""):
 
 
 @bot.command(name="save")
-async def save(ctx, city_name, country_code=""):
+async def save(ctx, city_name: str, country_code: str = ""):
+    """
+    This command saves the specified city to the list of cities the user
+    would like to look up the forecast for.
+
+    :param ctx: The context of the Discord message.
+    :param city_name: The city that the user wants to save.
+    :param country_code: Optional. The country code of the country that the
+    city is in.
+    """
     file = open("cities.json", "w")
     city_name = city_name.upper()
     country_code = country_code.upper()
@@ -66,7 +92,17 @@ async def save(ctx, city_name, country_code=""):
 
 
 @bot.command(name="delete")
-async def delete_city(ctx, city_name, country_code=""):
+async def delete_city(ctx, city_name: str, country_code: str = ""):
+    """
+    This command removes the specified city from the list of cities the user
+    would like to look up the forecast for.
+
+    :param ctx: The context of the Discord message.
+    :param city_name: The city that the user wants to remove.
+    :param country_code: Optional. The country code of the country that the
+    city is in. If the user specified the country code when adding the city,
+    they will need to specify it when deleting it.
+    """
     city_name = city_name.upper()
     country_code = country_code.upper()
     name = ctx.author.name
@@ -91,30 +127,49 @@ async def delete_city(ctx, city_name, country_code=""):
 
 @bot.command(name="cities")
 async def cmd_get_cities(ctx):
+    """
+    This command lists the user's saved cities. Useful when the user wants to
+    make changes to their saved favourites list.
+
+    :param ctx: The context of the Discord message.
+    """
     message = get_cities(ctx.author.name, ctx.author.id)
     await ctx.send(message)
 
 
 # WEATHER HELPER METHODS -------------------------------------------------------
-def no_city_message(user_id):
+def no_city_message(user_id: int) -> str:
     """
     Returns a string with a generic error message for when the user doesn't
-    have any cities saved
-    :param user_id: The Discord ID of the user to be 
-    :return:
+    have any cities saved.
+    :param user_id: The Discord ID of the user to be tagged
+    :return: A string representing the message
     """
     msg = f"<@{user_id}> you have no saved cities! " \
           f"To do that, user the command !save [CITY] [COUNTRY CODE]."
     return msg
 
 
-def user_has_cities(user_name):
+def user_has_cities(user_name: str) -> bool:
+    """
+    Determines whether or not the user specified has any cities saved under
+    their name in cities.json.
+    :param user_name: The Discord username of the user to be checked
+    :return: A boolean representing whether or not the user has any cities
+    """
     if user_name not in user_cities or len(user_cities[user_name]) == 0:
         return False
     return True
 
 
-def get_cities(user_name, user_id):
+def get_cities(user_name: str, user_id: int) -> str:
+    """
+    Returns a string representing the specified user's cities saved under
+    their name in cities.json.
+    :param user_name: The Discord username of the user to be checked
+    :param user_id: The Discord ID of the user to be tagged
+    :return: A string representing the formatted data of a user's cities
+    """
     if user_has_cities(user_name):
         cities = []
         for city, country in user_cities[user_name]:
@@ -130,7 +185,17 @@ def get_cities(user_name, user_id):
     return message
 
 
-def generate_city_data(user_name, city, country):
+def generate_city_data(user_name: str, city: str, country: str) -> str:
+    """
+    Returns a string representing a weather report for a city. This includes
+    temperature data, as well as suggestions and warnings.
+
+    :param user_name: The Discord username of the user to be checked
+    :param city: The city to be checked
+    :param country: The country the city is in
+    :return: A string representing the formatted data of a user's weather
+    report for a specified city
+    """
     message = ""
     temp, warnings = get_temperature(user_name, city, country)
     message += f"**{city}"
