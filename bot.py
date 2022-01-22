@@ -11,11 +11,14 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
+EMOJI_LINE = ":white_small_square: " * 16 +"\n"
 bot = commands.Bot(command_prefix='!')
 
 a_file = open("cities.json", "r")
 user_cities = json.load(a_file)
 a_file.close()
+b_file = open("emoji_ids.json", "r")
+emoji_ids = json.load(b_file)
 ACCESS_TOKEN = uipath_functions.get_uipath_token()
 
 
@@ -44,7 +47,8 @@ async def send_weather(ctx, spec_city: str = "", spec_country: str = ""):
 
     prev_message = await ctx.send(
         'Gathering <@' + str(user_id) + '>\'s weather data...')
-    message = f"__Here is your weather report! :bar_chart:__ <@{user_id}>\n"
+    message = EMOJI_LINE
+    message += f":bar_chart: __Here is your weather report! __ <@{user_id}>\n"
     if spec_city == "" and spec_country == "":
         # If the user has no cities saved
         if not user_has_cities(name):
@@ -54,11 +58,14 @@ async def send_weather(ctx, spec_city: str = "", spec_country: str = ""):
                        "try !weather [CITY] [COUNTRY]."
         else:
             for city, country in user_cities[name]:
-                message += generate_city_data(name, city, country)
+                message += "\n"+generate_city_data(name, city, country)+"\n"
     elif spec_city != "":
         spec_city = spec_city.upper()
         spec_country = spec_country.upper()
+        message += "\n"
         message += generate_city_data(name, spec_city, spec_country)
+        message += "\n"
+    message += "\n"+ EMOJI_LINE
     await prev_message.edit(content=f"{message}")
 
 
@@ -130,7 +137,8 @@ async def cmd_get_cities(ctx):
 
     :param ctx: The context of the Discord message.
     """
-    message = get_cities(ctx.author.name, ctx.author.id)
+    message = f"<@{ctx.author.id}> Here's your saved cities:"
+    message += get_cities(ctx.author.name, ctx.author.id)
     await ctx.send(message)
 
 
@@ -176,7 +184,7 @@ def get_cities(user_name: str, user_id: int) -> str:
             cities.append(location)
         message = ""
         for city in cities:
-            message += "\n" + city
+            message += "\n:point_right:" + city
     else:
         message = no_city_message(user_id)
     return message
@@ -194,19 +202,21 @@ def generate_city_data(user_name: str, city: str, country: str) -> str:
     report for a specified city
     """
     message = ""
-    temp, warnings, suggestion, forecast = get_temperature(user_name, city, country)
+    temp, warnings, suggestion, forecast, icon = get_temperature(user_name, city, country)
     message += f"**{city}"
     if country != "":
         message += f", {country}"
-    message += f" {temp}C°\n**"
+    emoji_id = f"{icon}d2x"
+    message += f" {temp}C°** {emoji_ids[emoji_id]} \n"
+
     message += forecast
+    message += "\n"
     if warnings:  # equivalent to warning != []
-        message += ':warning: Warnings:\n'
+        message += ':warning: Warnings:'
         for warning in warnings:
-            message += warning + "\n"
+            message += "\n"+warning
     elif suggestion:
         message += suggestion
-    message += "\n"
     return message
 
 
@@ -225,7 +235,8 @@ def get_temperature(user_name, city, country):
     warnings, suggestion = get_special_cond(temp, out['wind']['speed'],
                                 out['main']['humidity'])
     forecast = f':cloud: The forecast for today is {out["weather"][0]["description"]}.\n'
-    return temp, warnings, suggestion, forecast
+    icon = out["weather"][0]["icon"][0:2]
+    return temp, warnings, suggestion, forecast, icon
 
 def get_special_cond(temp, wind_speed, humidity):
     humid = float(humidity) >= 65
@@ -237,34 +248,34 @@ def get_special_cond(temp, wind_speed, humidity):
 
     warnings = []
     suggestion = ""
-    if humid:
+    if humid and not cold:
         warnings.append(
-            '- It appears to be a humid day, so make sure to stay hydrated and '
+            ':point_right: It appears to be a humid day, so make sure to stay hydrated and '
             'avoid outdoor activities! :droplet:')
     if dry:
         warnings.append(
-            '- It appears to be a dry day, so make sure to stay hydrated and '
+            ':point_right: It appears to be a dry day, so make sure to stay hydrated and '
             'avoid outdoor activities and moisturize! :desert:')
     if hot:
         warnings.append(
-            '- It appears to be a hot day, so make sure to stay hydrated, '
+            ':point_right: It appears to be a hot day, so make sure to stay hydrated, '
             'wear loose clothing, preferably of darker colors! :sun_with_face:')
     if windy:
         warnings.append(
-            '-:exclamation: It\'s very windy outside. '
+            ':point_right::exclamation:It\'s very windy outside. '
             'Be careful! :wind_blowing_face:')
     if cold:
         warnings.append(
-            '-:exclamation: It\'s very cold outside! :cold_face: Wear warm '
+            ':point_right::exclamation:It\'s very cold outside! :cold_face: Wear warm '
             'clothes! :snowflake:')
 
 
     if warnings == []:
         if chilly:
-            suggestion = "-:grey_exclamation: It's a little chilly" + \
+            suggestion = ":point_right::grey_exclamation:It's a little chilly" + \
                         " outside, so it's better to put on a jacket! :smile:"
         else:
-            suggestion = "-:grey_exclamation: The weather is great" + \
+            suggestion = ":point_right::grey_exclamation:The weather is great" + \
                 " outside! Go out and have a nice day! :smile:"
     return warnings, suggestion
 
