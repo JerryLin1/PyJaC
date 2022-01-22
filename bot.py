@@ -110,7 +110,7 @@ async def delete_city(ctx, city_name: str, country_code: str = ""):
         user_cities[name] = [(city_name, country_code)]
         await ctx.send(no_city_message(user_id))
     elif not [city_name, country_code] in user_cities[name]:
-        await ctx.send(f"<@{user_id}> You don't have that city saved!")
+        await ctx.send(f"<@{user_id}> You don't have that city saved! (Make sure to add the country code if you have that saved)")
     else:
         user_cities[name].remove([city_name, country_code])
         message = f"<@{user_id}> {city_name} deleted!"
