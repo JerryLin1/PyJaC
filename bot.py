@@ -12,7 +12,18 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
 EMOJI_LINE = ":white_small_square: " * 16 + "\n"
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!', help_command=None)
+
+with open('help_commands', "r") as f:
+    pass
+
+
+@bot.command()
+async def help(ctx):
+    with open('help_commands', "r") as f:
+        await ctx.send(f.read())
+    f.close()
+
 
 a_file = open("cities.json", "r")
 user_cities = json.load(a_file)

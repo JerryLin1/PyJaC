@@ -1,0 +1,18 @@
+--------------------------------------------------------------
+`!weather <optional: city> <optional: country_code>`
+This command provides the user with the forecast for their saved cities. The forecast will includes any warnings to take note of and give suggestions to the user. Additionally, the user can optionally specify a city and a country code if they want to get the weather data for a single city.
+    -`optional`: city: The city to get the weather data from.
+    -`optional`: country_code: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
+--------------------------------------------------------------
+`!save <city> <optional: country_code>`
+This command saves the specified city to the list of cities the user would like to look up the forecast for.
+    -`city`: The city to add to the user's list.
+    -`optional`: country_code: The country code of the country that the city resides in. Useful if the city has a name shared with other cities (For example, London CA vs London UK)
+--------------------------------------------------------------
+`!delete <city> <optional: country_code>`
+This command removes the specified city from the list of cities the user would like to look up the forecast for.
+    -`city`: The city to add to the user's list.
+    -`optional`: country_code: The country code of the country that the city resides in.
+--------------------------------------------------------------
+`!cities`
+This command lists the user's saved cities. Useful when the user wants to make changes to their saved favourites list.
